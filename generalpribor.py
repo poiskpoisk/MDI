@@ -283,6 +283,7 @@ class GeneralPriborWindow_MEGA_1024(GeneralPriborWindow):
         self.loadDiesel = 100
 
         self.flagLOG_ON = False
+        self.flagDirection = False
 
         # Определяем данные для всех типов ECU путем вызова конструктора базового класса и запускаем дальнейшую работу
         GeneralPriborWindow.__init__(self, parent)
@@ -394,7 +395,7 @@ class GeneralPriborWindow_MEGA_1024(GeneralPriborWindow):
         self.flag_PPS, self.flag_RPM, self.flag_speed, self.flagGPS_NO_START_COORDINATE = self.getFlag( dataFromECU )
         # Байт флагов ( инверсия по состоянию см. PACK_BYTE в arduino
         ED.flag_Relay, self.flag_block_ON, self.flagGPS_NO_DATA, self.flagGPS_FORWARD,\
-        self.flagGPS_ON, ED.flag_ECU_ON_VISU, res1, reserv2 = self.getFlag( dataFromECU )
+        self.flagGPS_ON, ED.flag_ECU_ON_VISU, self.flagDirection, reserv = self.getFlag( dataFromECU )
 
         self.Test_val   = self.getWord( dataFromECU )
         self.K_emul     = self.getByte( dataFromECU )
@@ -490,6 +491,7 @@ class GeneralPriborWindow_MEGA_1366(GeneralPriborWindow_MEGA_1024):
         self.flagGPS_NO_DATA                = random.choice([True, False])
         self.flagGPS_NO_START_COORDINATE    = random.choice([True, False])
         self.flagGPS_FORWARD                = random.choice([True, False])
+        self.flagDirection                  = random.choice([True, False])
 
     # Обновляет экранные значения
     def update(self):
@@ -507,7 +509,8 @@ class GeneralPriborWindow_MEGA_1366(GeneralPriborWindow_MEGA_1024):
         # Индикаторы GPS
         self.bitmapTriger(self.flagGPS_NO_DATA, self.err_green, self.err_red, self.errGPSnoData)
         self.bitmapTriger(self.flagGPS_NO_START_COORDINATE, self.err_green, self.err_red, self.errGPSnoSTART_COORD)
-        self.bitmapTriger(self.flagGPS_FORWARD, self.err_green, self.err_red, self.flagDirection)
+        self.bitmapTriger(self.flagDirection, self.err_green, self.err_red, self.flDirection)
+        self.bitmapTriger(self.flagGPS_FORWARD, self.err_green, self.err_red, self.flForward)
 
         # Данные GPS, текущие кординаты
         self.stLON.SetLabel(u'LON: '            + str('%3.6f' % float(self.LON)))
@@ -569,7 +572,7 @@ class GeneralPriborWindow_MEGA_1600(GeneralPriborWindow_MEGA_1366):
     def fifthColumn(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.GPSData( sizer )
-        sizer.Add((0, 20))  # Пустое пространство
+        sizer.Add((0, 5))  # Пустое пространство
         self.gaugePressureLoad(sizer, offset=0, size=self.smallGaugeSize)
         self.stLoadgas = self.Item_simple(u'Газ кор.: ' + str(self.loadGas), sizer, padding=60)
         self.stLoaddiesel = self.Item_simple(u'ДТ кор. : ' + str(self.loadDiesel), sizer, padding=60)
