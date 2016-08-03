@@ -407,12 +407,12 @@ class OutputMixin():
         self.stGPSgas       = self.Item_simple(u'Газ кор.: ' + str(self.GPSgas), sizer, padding=60)
         self.stGPSdiesel    = self.Item_simple(u'ДТ кор. : ' + str(self.GPSdiesel), sizer, padding=60)
 
-        sizer.Add((0, 5))  # Пустое пространство
+        sizer.Add((0, 15))  # Пустое пространство
 
-        sizer.Add((0, 15))                                                                      # Пустое пространство
         self.errGPSnoData           = self.Item_Err(u'Данные от GPS',    sizer)
         self.errGPSnoSTART_COORD    = self.Item_Err(u'Стартовые коорд.', sizer)
-        self.flagDirection          = self.Item_Err(u'Приближаемся',     sizer)
+        self.flDirection            = self.Item_Err(u'Направление', sizer)
+        self.flForward              = self.Item_Err(u'Приближаемся', sizer)
 
 
 
