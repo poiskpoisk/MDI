@@ -19,9 +19,7 @@ class SetupGPSWindow(SM.InputMixin):
                                     (u"Тип зоны 1 Коэффициент по газу :",   "zoneType1_GAS",    3),
                                     (u"Тип зоны 1 Коэффициент по дизелю:",  "zoneType1_DIESEL", 3),
                                     (u"Тип зоны 2 Коэффициент по газу :",   "zoneType2_GAS",    3),
-                                    (u"Тип зоны 2 Коэффициент по дизелю:",  "zoneType2_DIESEL", 3),
-                                    (u"Тип зоны 3 Коэффициент по газу :",   "zoneType3_GAS",    3),
-                                    (u"Тип зоны 3 Коэффициент по дизелю:",  "zoneType3_DIESEL", 3) )
+                                    (u"Тип зоны 2 Коэффициент по дизелю:",  "zoneType2_DIESEL", 3), )
 
         otherSizer = self.box(dialogSetup, u"Разное", ED.gps_setup,
                                     (u"Нулевая точка, долгота градусы:", "zeroPointLONgrad", 3 ),

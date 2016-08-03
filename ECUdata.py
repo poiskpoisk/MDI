@@ -83,7 +83,7 @@ prog_setup = { 'SSID':0, 'WIFI_pass':0, 'IP_ECU':0, 'delay':4 , 'typeRedCal':1, 
                'comSpeed':0, 'comSpeedReal':9600, "delayFirstCon":2000 }
 
 gps_setup ={ "zoneType0_GAS":0, "zoneType0_DIESEL":0, "zoneType1_GAS":0, "zoneType1_DIESEL":0,
-             "zoneType2_GAS":0, "zoneType2_DIESEL": 0,"zoneType3_GAS":0, "zoneType3_DIESEL":0,
+             "zoneType2_GAS":0, "zoneType2_DIESEL": 0,
              "zeroPointLONgrad":0, "zeroPointLATgrad":0, "zeroPointLONsec":0, "zeroPointLATsec":0,
              "zeroPointLON": b'\x00\x00\x00\x00',    "zeroPointLAT": b'\x00\x00\x00\x00' }
 

@@ -378,7 +378,7 @@ class ZoneList():
         else:
             if resLong and resLat and resRadius and resType and resType and \
                             int(self.nodeEdit.radius) <= 64000  and int(self.nodeEdit.radius) >= 100 \
-                            and  int(self.nodeEdit.type) <= 255 and \
+                            and  int(self.nodeEdit.type) <= 2 and \
                             int(resGrLong.group(0)) <= 180 and int(resGrLat.group(0)) <= 90:
                 if self.isHaveDublicate( self.nodeEdit ) :
                     self.errHandler()
@@ -411,7 +411,7 @@ class ZoneList():
         wx.MessageBox(u"Не допустимое значение. Допустимые значения - "
                       u"Долгота: +/-XXX.XXXXXX ( ХХХ: 0..180 ) градусов, "
                       u"Широта: +/- YY.YYYYYY ( YY: 0..90 ) градусов,"
-                      u" Радиус: 100..64000 метров, Тип: 0..255"
+                      u" Радиус: 100..64000 метров, Тип: 0,1,2 "
                       u"Так же не допускается дублирование зон с одинаковыми координатами.",
                       caption=u"Сообщение о проблемах", style=wx.OK | wx.ICON_ERROR)
 

@@ -149,6 +149,7 @@ class GeneralPriborWindow(wx.MDIChildFrame, OM.OutputMixin, ParseMixin.ReadECU )
             self.getRandomValue()
         else:
             if len(dataFromECU) > 0 : self.parseData( dataFromECU )
+            else: print u'Пакет нулевой длины получен из ECU'
         self.update()
 
     # Эмуляция поступивших значений из ECU для "жизни" когда ECU не поделючено

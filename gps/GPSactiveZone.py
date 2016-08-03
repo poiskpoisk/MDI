@@ -34,7 +34,6 @@ class ActiveZone( Shema.ReadECU, OutputMixin.OutputMixin ):
         dTabl.SetBackgroundColour("WHITE")
         main_sz = wx.BoxSizer( wx.VERTICAL )
 
-        # create the listctrl
         self.dvlc = dvlc = dv.DataViewListCtrl( dTabl )
 
         # Give it some columns.
@@ -53,7 +52,6 @@ class ActiveZone( Shema.ReadECU, OutputMixin.OutputMixin ):
             dvlc.AppendItem(itemvalues)
 
         main_sz.Add(dvlc, 1, wx.EXPAND)
-        print self.startPointLON, self.startPointLAT
         self.stSP_LON = self.Item_simple(u'Точка старта LON: '  + str( self.startPointLON), main_sz, win= dTabl )
         self.stSP_LAT = self.Item_simple(u'Точка старта LAT:  ' + str( self.startPointLAT), main_sz, win = dTabl )
 
@@ -82,10 +80,12 @@ class ActiveZone( Shema.ReadECU, OutputMixin.OutputMixin ):
         # Разбираем список зон из калибровки пока не дойдем до конца по количеству зон
         # Первые 8 байт занимает точка старта поездки
         # todo Оттестировать на 20 зонах с целью проверки условий выхода из цикла
+
+        numberRecord = 0
         while (ActiveZone.GPSActiveZoneCalSize-8)  > self.parsePosition :
             distance = str(self.getLong( data ))
             if distance == '0': break  # Или до пустой зоны
             (zoneName, long, lat, radius, typeZone) = self.getZoneRecord( data )
-            numberRecord = str(ActiveZone.GPSActiveZoneCalSize / self.parsePosition)
+            numberRecord+= 1
             self.listActiveZone.append( [ numberRecord, zoneName, long, lat, radius, typeZone, distance ] )
 
