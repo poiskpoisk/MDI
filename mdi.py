@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'AMA'
 
-import os
 import re
 import time
 
@@ -16,12 +15,12 @@ import generalpribor as GP
 import thserial as TH
 
 from gps import GPS2ECU
-from gps import GPSactiveZone
 from gps import GPSfile
 from gps import GPSzone
 
 from mixin import Func
 from mixin import ParseMixin
+from mixin import MenuMixin
 
 from setup import GeneralSetup
 from setup import ProgramSetup
@@ -29,7 +28,7 @@ from setup import TableSetup
 from setup import GPS_Setup
 
 
-class MainFrame(wx.MDIParentFrame, ParseMixin.Parse):
+class MainFrame( wx.MDIParentFrame, ParseMixin.Parse, MenuMixin.Menu ):
 
     def __init__(self):
         self.gpw=0
@@ -45,175 +44,56 @@ class MainFrame(wx.MDIParentFrame, ParseMixin.Parse):
         self.Bind(wx.EVT_CLOSE, self.mainOnClose )
 
     def createMenu(self, funcReadECU, funcWriteECU ):
-        # ----------------------------------------------------------------------
-        ID_Gas_cal = wx.NewId(); ID_Diesel_cal = wx.NewId(); ID_Osnova_cal = wx.NewId()
-        ID_General_setup = wx.NewId(); ID_Grid_setup = wx.NewId(); ID_Read_cal = wx.NewId()
-        ID_Write_cal = wx.NewId(); ID_Exit = wx.NewId(); ID_Connect = wx.NewId()
-        ID_ReadECU_cal = wx.NewId(); ID_WriteECU_cal = wx.NewId(); ID_Disconnect = wx.NewId()
-        ID_ECU_reset = wx.NewId(); ID_INJ_test_ON = wx.NewId(); ID_autocal_PPS = wx.NewId()
-        ID_manualcal_PPS = wx.NewId(); ID_program_setup = wx.NewId(); ID_defaultCal =wx.NewId()
-        ID_manual_ON = wx.NewId(); ID_GPSlistZone = wx.NewId(); ID_GPSreadFile = wx.NewId()
-        ID_GPSsaveFile = wx.NewId(); ID_GPSWriteECU_cal  = wx.NewId(); ID_GPSReadECU_cal  = wx.NewId()
-        ID_GPS_setup = wx.NewId();ID_GPS_activeZone = wx.NewId();ID_GPS_activeZoneList = wx.NewId()
-
-        # ----------------------------------------------------------------------
-
-        # Создаем меню для работ с калибровкой
-        cal_menu = wx.Menu()
-
-        osnovaItem = wx.MenuItem(cal_menu, ID_Osnova_cal, u"&Калибровка ГАЗ основа\tCtrl+B")
-        img = wx.Image(os.getcwd() + '\pic\\gas16.png', wx.BITMAP_TYPE_ANY)
-        osnovaItem.SetBitmap(wx.BitmapFromImage(img))
-        cal_menu.AppendItem(osnovaItem)
-
-        gasItem = wx.MenuItem(cal_menu, ID_Gas_cal, u"&Калибровка ГАЗ\tCtrl+G")
-        img = wx.Image(os.getcwd() + '\pic\\gas16.png', wx.BITMAP_TYPE_ANY)
-        gasItem.SetBitmap(wx.BitmapFromImage(img))
-        cal_menu.AppendItem(gasItem)
-
-        dieselItem = wx.MenuItem(cal_menu, ID_Diesel_cal, u"&Калибровка ДИЗЕЛЬ\tCtrl+D")
-        img = wx.Image(os.getcwd() + '\pic\\oil16.png', wx.BITMAP_TYPE_ANY)
-        dieselItem.SetBitmap(wx.BitmapFromImage(img))
-        cal_menu.AppendItem(dieselItem)
-
-        cal_menu.AppendSeparator()
-
-        readDiskItem = wx.MenuItem(cal_menu, ID_Read_cal, u"&Считать из файла *.py\tCtrl+L")
-        img = wx.Image(os.getcwd() + '\pic\\readdisk16.png', wx.BITMAP_TYPE_ANY)
-        readDiskItem.SetBitmap(wx.BitmapFromImage(img))
-        cal_menu.AppendItem(readDiskItem)
-
-        saveDiskItem = wx.MenuItem(cal_menu, ID_Write_cal, u"&Записать в файл *.py\tCtrl+S")
-        img = wx.Image(os.getcwd() + '\pic\\savedisk16.png', wx.BITMAP_TYPE_ANY)
-        saveDiskItem.SetBitmap(wx.BitmapFromImage(img))
-        cal_menu.AppendItem(saveDiskItem)
-
-        cal_menu.AppendSeparator()
-
-        readECUItem = wx.MenuItem(cal_menu, ID_ReadECU_cal, u"&Считать калибровку из ECU\tCtrl+O")
-        img = wx.Image(os.getcwd() + '\pic\\write16.png', wx.BITMAP_TYPE_ANY)
-        readECUItem.SetBitmap(wx.BitmapFromImage(img))
-        cal_menu.AppendItem(readECUItem)
-
-        writeECUItem = wx.MenuItem(cal_menu, ID_WriteECU_cal, u"&Загрузить калибровку в ECU\tCtrl+W")
-        img = wx.Image(os.getcwd() + '\pic\\read16.png', wx.BITMAP_TYPE_ANY)
-        writeECUItem.SetBitmap(wx.BitmapFromImage(img))
-        cal_menu.AppendItem(writeECUItem)
-
-        # Создаем меню для опций и натсроек
-        setup_menu = wx.Menu()
-        setup_menu.Append(ID_General_setup, u"&Основные\tCtrl+E")
-        setup_menu.Append(ID_Grid_setup, u"&Табличные\tCtrl+T")
-        setup_menu.Append(ID_program_setup, u"&Програмные\tCtrl+P")
-
-        # Создаем меню для работы с ECU
-        ECU_menu = wx.Menu()
-        ECU_menu.Append(ID_Connect, u"&Открыть COM порт")
-        ECU_menu.Append(ID_Disconnect, u"&Закрыть COM порт")
-        ECU_menu.AppendSeparator()
-        manualItem = wx.MenuItem(ECU_menu, ID_manual_ON, u"&ECU ВКЛ/ВЫКЛ\tCtrl+Z")
-        img = wx.Image(os.getcwd() + '\pic\\on-off16.png', wx.BITMAP_TYPE_ANY)
-        manualItem.SetBitmap(wx.BitmapFromImage(img))
-        ECU_menu.AppendItem(manualItem)
-        ECU_menu.AppendSeparator()
-        resetItem = wx.MenuItem(ECU_menu, ID_ECU_reset, u"&Перегрузить ECU\tCtrl+R")
-        img = wx.Image(os.getcwd() + '\pic\\reset1616.gif', wx.BITMAP_TYPE_ANY)
-        resetItem.SetBitmap(wx.BitmapFromImage(img))
-        ECU_menu.AppendItem(resetItem)
-        ECU_menu.Append(ID_defaultCal, u"&Заводские установки")
-        ECU_menu.AppendSeparator()
-        ECU_menu.Append(ID_Exit, u"&Выход\tCtrl+X")
-
-        # Создаем меню для работы с форсунками
-        INJ_menu = wx.Menu()
-        INJ_menu.Append(ID_INJ_test_ON, u"&Тестирование форсунок.")
-        # Создаем меню для работы с настройками PPS
-        PPS_menu = wx.Menu()
-        PPS_menu.Append(ID_autocal_PPS, u"&Автоматическая калибровка PPS")
-        PPS_menu.Append(ID_manualcal_PPS, u"&Ручная калибровка PPS")
-
-        # Создаем меню для работы c GPS
-        GPS_menu = wx.Menu()
-        GPS_menu.Append(ID_GPSlistZone, u"&Список зон\tCtrl+1")
-        GPS_menu.Append(ID_GPS_setup, u"&Настройки\tCtrl+2")
-        GPS_menu.AppendSeparator()
-        GPS_menu.Append(ID_GPS_activeZoneList, u"&Список активных зон\tCtrl+3")
-        readActiveZoneGPS = wx.MenuItem(GPS_menu, ID_GPS_activeZone, u"&Считать активные зоны\tCtrl+4")
-        img = wx.Image(os.getcwd() + '\pic\\write16.png', wx.BITMAP_TYPE_ANY)
-        readActiveZoneGPS.SetBitmap(wx.BitmapFromImage(img))
-        GPS_menu.AppendItem(readActiveZoneGPS)
-
-        GPS_menu.AppendSeparator()
-
-        readDiskItemGPS = wx.MenuItem(GPS_menu, ID_GPSreadFile, u"&Считать из файла *.gp\tCtrl+5")
-        img = wx.Image(os.getcwd() + '\pic\\readdisk16.png', wx.BITMAP_TYPE_ANY)
-        readDiskItemGPS.SetBitmap(wx.BitmapFromImage(img))
-        GPS_menu.AppendItem(readDiskItemGPS)
-
-        saveDiskItemGPS = wx.MenuItem(GPS_menu, ID_GPSsaveFile, u"&Записать в файл *.gp\tCtrl+6")
-        img = wx.Image(os.getcwd() + '\pic\\savedisk16.png', wx.BITMAP_TYPE_ANY)
-        saveDiskItemGPS.SetBitmap(wx.BitmapFromImage(img))
-        GPS_menu.AppendItem(saveDiskItemGPS)
-
-        GPS_menu.AppendSeparator()
-
-        GPSreadECUItem = wx.MenuItem(GPS_menu, ID_GPSReadECU_cal, u"&Считать GPS калибровку из ECU\tCtrl+7")
-        img = wx.Image(os.getcwd() + '\pic\\write16.png', wx.BITMAP_TYPE_ANY)
-        GPSreadECUItem.SetBitmap(wx.BitmapFromImage(img))
-        GPS_menu.AppendItem(GPSreadECUItem)
-
-        GPSwriteECUItem = wx.MenuItem(GPS_menu, ID_GPSWriteECU_cal, u"&Загрузить GPS калибровку в ECU\tCtrl+8")
-        img = wx.Image(os.getcwd() + '\pic\\read16.png', wx.BITMAP_TYPE_ANY)
-        GPSwriteECUItem.SetBitmap(wx.BitmapFromImage(img))
-        GPS_menu.AppendItem(GPSwriteECUItem)
 
         # Добавляем на меню бар все меню
-        menubar = wx.MenuBar()
-        menubar.Append(ECU_menu, u"&Блок управления")
-        menubar.Append(cal_menu, u"&Калибровки")
-        menubar.Append(setup_menu, u"&Настройки")
-        menubar.Append(PPS_menu, u"&Педаль газа")
-        menubar.Append(INJ_menu, u"&Форсунки")
-        menubar.Append(GPS_menu, u"&GPS")
+        self.menubar = wx.MenuBar()
 
-        self.SetMenuBar(menubar)
+        # Создаем меню для работ блоком управления
+        self.menuBlock( u"&Блок управления",
+                        [u"&Открыть COM порт",          self.onConnectECU,      None,           False],
+                        [u"&Закрыть COM порт",          self.onDisconnectECU,   None,           True],
+                        [u"&ECU ВКЛ/ВЫКЛ\tCtrl+Z",      self.onManualON,        'on-off16.png', False],
+                        [u"&Перегрузить ECU\tCtrl+R",   self.onResetECU,        'reset1616.gif',False],
+                        [u"&Заводские установки",       self.onFillDefaultCal,  None,           True],
+                        [u"&Выход\tCtrl+X",             self.onExit,            None,           False] )
 
-        self.Bind(wx.EVT_MENU, DieselGasCalWindow.GasCalWindow,       id=ID_Gas_cal)
-        self.Bind(wx.EVT_MENU, DieselGasCalWindow.OsnovaGasCalWindow, id=ID_Osnova_cal)
-        self.Bind(wx.EVT_MENU, DieselGasCalWindow.DieselCalWindow,    id=ID_Diesel_cal)
+        # Создаем меню для работ с калибровкой
+        self.menuBlock( u"&Калибровки",
+                       [u"&Калибровка ГАЗ основа\tCtrl+B",  DieselGasCalWindow.OsnovaGasCalWindow, 'gas16.png',  False],
+                       [u"&Калибровка ГАЗ\tCtrl+G",         DieselGasCalWindow.GasCalWindow,        'gas16.png', False],
+                       [u"&Калибровка ДИЗЕЛЬ\tCtrl+D",      DieselGasCalWindow.DieselCalWindow,     'oil16.png', True],
+                       [u"&Считать из файла *.py\tCtrl+L",  ReadWriteCalDisk.onCalRead,         'readdisk16.png',False],
+                       [u"&Записать в файл *.py\tCtrl+S",   ReadWriteCalDisk.onCalWrite,        'savedisk16.png', True],
+                       [u"&Считать калибровку из ECU\tCtrl+O",  funcReadECU,                      'write16.png', False],
+                       [u"&Загрузить калибровку в ECU\tCtrl+W", funcWriteECU,                     'read16.png', False],)
 
-        self.Bind(wx.EVT_MENU, GeneralSetup.GeneralSetupWindow, id=ID_General_setup)
-        self.Bind(wx.EVT_MENU, TableSetup.TableSetup,           id=ID_Grid_setup)
-        self.Bind(wx.EVT_MENU, ProgramSetup.programSetupWindow, id=ID_program_setup)
+        # Создаем меню для опций и натсроек
+        self.menuBlock( u"&Настройки",
+                       [u"&Основные\tCtrl+E",   GeneralSetup.GeneralSetupWindow,    None, False],
+                       [u"&Табличные\tCtrl+T",  TableSetup.TableSetup,              None, False],
+                       [u"&Програмные\tCtrl+P", ProgramSetup.programSetupWindow,    None, False])
 
-        self.Bind(wx.EVT_MENU, ReadWriteCalDisk.onCalWrite, id=ID_Write_cal)
-        self.Bind(wx.EVT_MENU, ReadWriteCalDisk.onCalRead,  id=ID_Read_cal)
+        # Создаем меню для работы с настройками PPS
+        self.menuBlock( u"&Педаль газа",
+                       [u"&Автоматическая калибровка PPS",  self.onAutoCalPPS,      None, False],
+                       [u"&Ручная калибровка PPS",          self.onManualCalPPS,    None, False] )
 
-        self.Bind(wx.EVT_MENU, self.onAutoCalPPS,        id=ID_autocal_PPS)
-        self.Bind(wx.EVT_MENU, self.onManualCalPPS,      id=ID_manualcal_PPS)
+        # Создаем меню для работы с форсунками
+        self.menuBlock( u"&Форсунки",
+                       [u"&Тестирование форсунок.",         self.onTestINJ_ON, None, False] )
 
-        self.Bind(wx.EVT_MENU, funcWriteECU, id=ID_WriteECU_cal)
-        self.Bind(wx.EVT_MENU, funcReadECU,  id=ID_ReadECU_cal)
+        # Создаем меню для работы c GPS
+        self.menuBlock( u"&GPS",
+                       [u"&Список зон\tCtrl+1",                     GPSzone.ZoneList,           None, False],
+                       [u"&Настройки\tCtrl+2",                      GPS_Setup.SetupGPSWindow,   None, True],
+                       [u"&Список активных зон\tCtrl+3",            ED.az.showActiveZoneList,   None, False],
+                       [u"&Считать активные зоны\tCtrl+4",          ED.az.readActiveZone,       'write16.png', True],
+                       [u"&Считать из файла *.gp\tCtrl+5",          GPSfile.readFile,          'readdisk16.png', False],
+                       [u"&Записать в файл *.gp\tCtrl+6",           GPSfile.saveFile,           'savedisk16.png', True],
+                       [u"&Считать GPS калибровку из ECU\tCtrl+7",  GPS2ECU.GPS2ECU().GPSwriteECU,'write16.png', False],
+                       [u"&Загрузить GPS калибровку в ECU\tCtrl+8", GPS2ECU.GPS2ECU().GPSreadECU, 'read16.png', False] )
 
-        self.Bind(wx.EVT_MENU, self.onConnectECU,     id=ID_Connect)
-        self.Bind(wx.EVT_MENU, self.onDisconnectECU,  id=ID_Disconnect)
-        self.Bind(wx.EVT_MENU, self.onManualON,       id=ID_manual_ON)
-        self.Bind(wx.EVT_MENU, self.onResetECU,       id=ID_ECU_reset)
-        self.Bind(wx.EVT_MENU, self.onFillDefaultCal, id=ID_defaultCal)
-
-        self.Bind(wx.EVT_MENU, self.onTestINJ_ON,   id=ID_INJ_test_ON)
-
-        self.Bind(wx.EVT_MENU, GPSzone.ZoneList,                              id=ID_GPSlistZone )
-        self.Bind(wx.EVT_MENU, GPS_Setup.SetupGPSWindow, id=ID_GPS_setup)
-        self.Bind(wx.EVT_MENU, ED.az.showActiveZoneList, id=ID_GPS_activeZoneList )
-        self.Bind(wx.EVT_MENU, ED.az.readActiveZone,     id=ID_GPS_activeZone)
-        self.Bind(wx.EVT_MENU, GPSfile.readFile,                              id=ID_GPSreadFile)
-        self.Bind(wx.EVT_MENU, GPSfile.saveFile,                              id=ID_GPSsaveFile)
-        self.Bind(wx.EVT_MENU, GPS2ECU.GPS2ECU().GPSwriteECU,                 id=ID_GPSWriteECU_cal)
-        self.Bind(wx.EVT_MENU, GPS2ECU.GPS2ECU().GPSreadECU,                  id=ID_GPSReadECU_cal)
-
-
-        self.Bind(wx.EVT_MENU, self.onExit, id=ID_Exit)
+        self.SetMenuBar(self.menubar)
 
     # Ручное включение или выключение блока
     def onManualON(self, evt):
