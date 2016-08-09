@@ -27,6 +27,7 @@ from setup import ProgramSetup
 from setup import TableSetup
 from setup import GPS_Setup
 
+from Log import LOGfile
 
 class MainFrame( wx.MDIParentFrame, ParseMixin.Parse, MenuMixin.Menu ):
 
@@ -90,8 +91,15 @@ class MainFrame( wx.MDIParentFrame, ParseMixin.Parse, MenuMixin.Menu ):
                        [u"&Считать активные зоны\tCtrl+4",          ED.az.readActiveZone,       'write16.png', True],
                        [u"&Считать из файла *.gp\tCtrl+5",          GPSfile.readFile,          'readdisk16.png', False],
                        [u"&Записать в файл *.gp\tCtrl+6",           GPSfile.saveFile,           'savedisk16.png', True],
-                       [u"&Считать GPS калибровку из ECU\tCtrl+7",  GPS2ECU.GPS2ECU().GPSwriteECU,'write16.png', False],
-                       [u"&Загрузить GPS калибровку в ECU\tCtrl+8", GPS2ECU.GPS2ECU().GPSreadECU, 'read16.png', False] )
+                       [u"&Считать GPS калибровку из ECU\tCtrl+7",  GPS2ECU.GPS2ECU().GPSreadECU,'write16.png', False],
+                       [u"&Загрузить GPS калибровку в ECU\tCtrl+8", GPS2ECU.GPS2ECU().GPSwriteECU, 'read16.png', False] )
+
+        # Создаем меню для работы c логами
+        self.menuBlock(u"&Логи",
+                       [u"&Список событий\tCtrl+A",                 ED.az.showActiveZoneList, None,         False],
+                       [u"&Считать лог из ECU\tCtrl+N",             LOGfile.readFile,       'write16.png',  True],
+                       [u"&Считать лог и настройки из файла *.lgs\tCtrl+H", LOGfile.readFile, 'readdisk16.png', False],
+                       [u"&Записать лог и настойки в файл *.lgs\tCtrl+J", LOGfile.saveFile, 'savedisk16.png', False])
 
         self.SetMenuBar(self.menubar)
 

@@ -218,5 +218,5 @@ class ThSerial ( ParseMixin.Parse ):
 class ThSerial_MEGA(ThSerial):
     def __init__(self, port, baudrate):
         ThSerial.__init__( self, port, baudrate )
-        self.ECU_buf = 84  # Длина буффера и маркера на передачу со стороны газодизельного ECU
+        self.ECU_buf = 84+2  # Длина буффера и маркера на передачу со стороны газодизельного ECU
 

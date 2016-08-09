@@ -2,7 +2,6 @@
 __author__ = 'AMA'
 
 import wx
-from struct import *
 import ECUdata as ED
 from mixin import InputMixin as SM
 
