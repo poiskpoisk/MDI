@@ -164,6 +164,9 @@ class ReadWriteCalECU_MEGA(ReadWriteCalECU):
         self.setByte( ED.gen_setup['Abs_max_GAS'] ) # Абсолютный максимум газа
         self.setByte( ED.gen_setup['safety_level_GAS'])
         self.setByte( ED.gen_setup['CL_max'] )
+        self.setByte(ED.gen_setup['LOG_mode'])
+        self.setByte(ED.gen_setup['Upower'])
+        print self.parsePosition
 
         self.setCRC()
 
@@ -183,3 +186,5 @@ class ReadWriteCalECU_MEGA(ReadWriteCalECU):
         ED.gen_setup['Abs_max_GAS']         = self.getByte( calFromECU )
         ED.gen_setup['safety_level_GAS']    = self.getByte( calFromECU )
         ED.gen_setup['CL_max']              = self.getByte( calFromECU )
+        ED.gen_setup['LOG_mode']            = self.getByte(calFromECU)
+        ED.gen_setup['Upower']              = self.getByte(calFromECU)

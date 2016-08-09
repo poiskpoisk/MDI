@@ -249,6 +249,7 @@ class GeneralPriborWindow_MEGA_1024(GeneralPriborWindow):
         self.flag_red_press = False         # Давлению редуктора
         self.flag_speed     = False         # Скорость
         self.flag_cLiq      = False         # Охлаждающая жидкость
+        self.flag_Upower    = False         # Напряжение питания
 
         self.flagGPS_ON                     = False         # Включение GPS
         self.flagGPS_NO_START_COORDINATE    = False
@@ -394,8 +395,8 @@ class GeneralPriborWindow_MEGA_1024(GeneralPriborWindow):
         self.flag_red_temp, self.flag_red_press, self.flag_EGT, self.flag_cLiq , \
         self.flag_PPS, self.flag_RPM, self.flag_speed, self.flagGPS_NO_START_COORDINATE = self.getFlag( dataFromECU )
         # Байт флагов ( инверсия по состоянию см. PACK_BYTE в arduino
-        ED.flag_Relay, self.flag_block_ON, self.flagGPS_NO_DATA, self.flagGPS_FORWARD,\
-        self.flagGPS_ON, ED.flag_ECU_ON_VISU, self.flagDirection, reserv = self.getFlag( dataFromECU )
+        ED.flag_Relay, self.flag_block_ON, self.flagLOG_ON, self.flagGPS_FORWARD, \
+        self.flagGPS_ON, ED.flag_ECU_ON_VISU, self.flagDirection, rr1 = self.getFlag( dataFromECU )
 
         self.Test_val   = self.getWord( dataFromECU )
         self.K_emul     = self.getByte( dataFromECU )
@@ -423,6 +424,8 @@ class GeneralPriborWindow_MEGA_1024(GeneralPriborWindow):
 
         self.Upower     = self.getWord( dataFromECU )
         self.loadPress  = self.getWord( dataFromECU )
+        # Еще один байт ошибок
+        self.flagGPS_NO_DATA, self.flag_Upower, r2, r3, r4, r5, r6, r7 = self.getFlag(dataFromECU)
 
         # Вычисляем, то что можно вычислить на основании полученных данных
         try:
@@ -548,6 +551,7 @@ class GeneralPriborWindow_MEGA_1600(GeneralPriborWindow_MEGA_1366):
         sizer = GeneralPriborWindow.secondColumn(self)
         sizer.Add((20, 45))  # Пустое пространство
         self.fullSetErr( sizer)
+        self.errUpower = self.Item_Err(u'   Напряжение питания', sizer, 7)
         return sizer
 
     def thirdColumn(self):
@@ -604,6 +608,8 @@ class GeneralPriborWindow_MEGA_1600(GeneralPriborWindow_MEGA_1366):
         self.loadGas    = random.uniform(0.5, 1.5)
         self.loadDiesel = random.uniform(0.5, 1.5)
 
+        self.flag_Upower = random.choice([True, False])
+
     # Обновляет экранные значения, специфичные для МЕГИ 1600
     def update(self):
         # Обновляет экранные значения общие для МЕГА и НАНО( минимальный ОБЩИЙ набор )
@@ -625,3 +631,4 @@ class GeneralPriborWindow_MEGA_1600(GeneralPriborWindow_MEGA_1366):
         self.stLoadgas.SetLabel(u'Газ кор.: ' + str('%2.2f' % self.loadGas))
         self.stLoaddiesel.SetLabel(u'ДТ кор. : ' + str('%2.2f' % self.loadDiesel))
 
+        self.bitmapTriger( self.flag_Upower, self.err_green, self.err_red, self.errUpower )

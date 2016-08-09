@@ -11,7 +11,7 @@ from mixin.Func import Raznoska
 # Модальный диалог основных настроек
 class GeneralSetupWindow(SM.InputMixin):
     def __init__(self, evt ):
-        dialogSetup = wx.Dialog(ED.main_parent, -1, u"Основные настройки", pos = (100,50), size = (960,700))
+        dialogSetup = wx.Dialog(ED.main_parent, -1, u"Основные настройки", pos = (100,50), size = (960,740))
         dialogSetup.SetBackgroundColour("WHITE")
         main_sizer = wx.FlexGridSizer(rows=5, cols=2, hgap=0, vgap=0)
 
@@ -21,8 +21,8 @@ class GeneralSetupWindow(SM.InputMixin):
                                 ( u"Поправочный  коэффициент  для  RPM:", "K_RPM",  4)     )
 
         turboSizer = self.box( dialogSetup, u"Давление наддува Turbo в миллибарах", ED.gen_setup,
-                               ( u"Минимальное значение давления наддува:", "Turbo_min", 4),
-                               ( u"Максимальное значение давления наддува:", "Turbo_max", 4)  )
+                               ( u"Минимальное   значение  давления  наддува   :", "Turbo_min", 4),
+                               ( u"Максимальное   значение  давления  наддува  :", "Turbo_max", 4)  )
 
         ppsSizer = self.box(dialogSetup, u"Педаль газа PPS", ED.gen_setup,
                               (u"Минимум датчика педали газа PPS1 (мВ):", "PPS1_min", 4),
@@ -32,22 +32,28 @@ class GeneralSetupWindow(SM.InputMixin):
                             [ u'Два сенсора', u'Один сенсор', u'Цифровой'], ED.gen_setup['PPS_type'] )
 
         reductorSizer = self.box(dialogSetup,  u"Настройки редуктора", ED.gen_setup,
-                              (u"Давление   в   редукторе  для   выключения   :", "Red_press", 4 ),
-                              (u"Температура   в   редукторе  для   включения  :", "T_red", 4 )  )
+                              (u"Давление  в  редукторе  для  выключения :", "Red_press", 4 ),
+                              (u"Температура в редукторе для  включения  :", "T_red", 4 )  )
 
         protectEngineSizer    = self.box(dialogSetup, u"Защита двигателя", ED.gen_setup,
-                              (u"Максимальная температура  EGT ( C ) :", "EGT_max", 3),
-                              (u"Максимальная  температура  ОЖ ( C ) :", "CL_max", 3) )
+                              (u"Максимальная   температура   EGT  (  C  )  :", "EGT_max", 3),
+                              (u"Максимальная    температура   ОЖ  (  C  )  :", "CL_max", 3) )
 
         otherSizer = self.box(dialogSetup, u"Разное", ED.gen_setup,
-                              (u"Поправка    для    вычисления    скорости   :", "V_cor", 3) )
+                              (u"Поправка  для    вычисления  скорости  :", "V_cor", 3),
+                              (u"Граница нормального напряжения питания :", "Upower", 2))
 
+        box = wx.StaticBox(dialogSetup, -1, u'Общие настройки')
+        boxSizer = wx.StaticBoxSizer(box, wx.VERTICAL)
 
-        ch_choise_GPS_mode = self.list(dialogSetup, otherSizer , u"Коррекция подачи газа  по  GPS:",
+        ch_choise_GPS_mode = self.list(dialogSetup, boxSizer , u"Коррекция    подачи    газа  по  GPS    :",
                                        [u'Не использовать', u'Использовать'], ED.gen_setup['GPS_mode'])
 
-        chCOMspeed = self.list(dialogSetup, otherSizer, u"Скорость обмена по COM порту:",
-                               ['9600', '19200', '57600', '115200'], ED.gen_setup['comSpeed'])
+        ch_choise_LOG_mode = self.list(dialogSetup, boxSizer, u"Вести логирование:",
+                                       [u'Не использовать', u'Использовать'], ED.gen_setup['LOG_mode'])
+
+        chCOMspeed = self.list(dialogSetup, boxSizer, u"Скорость  обмена   по   COM порту :",
+                               ['9600', '19200', '38400'], ED.gen_setup['comSpeed'])
 
         gasSizer = self.box(dialogSetup, u"Корректировка подачи газа", ED.gen_setup,
                               (u"Абсолютный максимум подачи газа, не больше:", "Abs_max_GAS", 3),
@@ -60,12 +66,13 @@ class GeneralSetupWindow(SM.InputMixin):
         buttons_sizer.AddButton(wx.Button(dialogSetup, wx.ID_CANCEL, u"Отказаться"))
         buttons_sizer.Realize()
 
+        main_sizer.Add(turboSizer, 0, wx.LEFT | wx.TOP, 30)
+        main_sizer.Add(reductorSizer, 0, wx.LEFT | wx.TOP, 30)
+        main_sizer.Add(boxSizer, 0, wx.LEFT | wx.TOP, 30)
         main_sizer.Add(ppsSizer,            0, wx.LEFT | wx.TOP, 30)
         main_sizer.Add(rpmSizer,            0, wx.LEFT | wx.TOP, 30)
-        main_sizer.Add(reductorSizer,       0, wx.LEFT | wx.TOP, 30)
         main_sizer.Add(otherSizer,          0, wx.LEFT | wx.TOP, 30)
-        main_sizer.Add(turboSizer,          0, wx.LEFT | wx.TOP, 30)
-        main_sizer.Add(gasSizer,            0, wx.LEFT | wx.TOP, 30)
+        main_sizer.Add(gasSizer, 0, wx.LEFT | wx.TOP, 30)
         main_sizer.Add(protectEngineSizer,  0, wx.LEFT | wx.TOP, 30)
         main_sizer.Add(buttons_sizer,       0, wx.LEFT | wx.TOP, 30)
 
@@ -93,15 +100,14 @@ class GeneralSetupWindow(SM.InputMixin):
 
             ED.gen_setup['PPS_type'] = ch_choise_type_PPS.GetCurrentSelection()
             ED.gen_setup['GPS_mode'] = ch_choise_GPS_mode.GetCurrentSelection()
+            ED.gen_setup['LOG_mode'] = ch_choise_LOG_mode.GetCurrentSelection()
             ED.gen_setup['comSpeed'] = chCOMspeed.GetCurrentSelection()
             if ED.gen_setup['comSpeed'] == 0:
                 ED.gen_setup['comSpeedReal'] = 9600
             elif ED.gen_setup['comSpeed'] == 1:
                 ED.gen_setup['comSpeedReal'] = 19200
             elif ED.gen_setup['comSpeed'] == 2:
-                ED.gen_setup['comSpeedReal'] = 57600
-            elif ED.gen_setup['comSpeed'] == 3:
-                ED.gen_setup['comSpeedReal'] = 115200
+                ED.gen_setup['comSpeedReal'] = 38400
 
         dialogSetup.Destroy()
 

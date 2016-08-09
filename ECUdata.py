@@ -74,7 +74,7 @@ PPSviewDIESEL_k_table = [0 * x for x in range(PPS_table_size)]
 # PPS_type = 0 - 2 аналоговых датчика, 1 - 1 датчик, 2 - цифра
 gen_setup = { 'RPM_max': 0, 'RPM_min': 0, 'Turbo_max': 0, "V_cor": 0,"K_RPM": 0,"EGT_max": 0,
              'Turbo_min': 0 , "Red_press": 0, "PPS1_min":0, "PPS1_max":0,  "T_red":0,  "PPS_type":0,
-              'Abs_max_GAS':0, 'safety_level_GAS':0, 'GPS_mode':0, 'CL_max':0, 'comSpeed':0 }
+              'Abs_max_GAS':0, 'safety_level_GAS':0, 'GPS_mode':0, 'CL_max':0, 'comSpeed':0, 'LOG_mode':0, 'Upower':0 }
 
 # Кортеж для хранения данных, вводимых в ProgramSetup
 # typeECU =0 МЕГА typeECU=1 НАНО
@@ -86,6 +86,8 @@ gps_setup ={ "zoneType0_GAS":0, "zoneType0_DIESEL":0, "zoneType1_GAS":0, "zoneTy
              "zoneType2_GAS":0, "zoneType2_DIESEL": 0,
              "zeroPointLONgrad":0, "zeroPointLATgrad":0, "zeroPointLONsec":0, "zeroPointLATsec":0,
              "zeroPointLON": b'\x00\x00\x00\x00',    "zeroPointLAT": b'\x00\x00\x00\x00' }
+
+log_setup ={ "limitEGT":0, "limitCL":0, "limitPred":0, "limitU":0 }
 
 # Переменные, использующиеся в TableSetup для автокалибровки и ручной калибровки PPS
 PPSview =0 # используется в PPSview
