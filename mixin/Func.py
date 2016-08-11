@@ -199,7 +199,7 @@ def readSetupFile():
         d = open('mdisettings.dat', 'rb')
         d.close()
     except:
-        wx.MessageBox(u'Не удалось считать таблицу с програмными настройками, создали новую',
+        wx.MessageBox(u'Не удалось считать таблицу с  програмными настройками, создали новую',
                       caption=u"Сообщение о проблемах", style=wx.OK | wx.ICON_ERROR)
         # with используется что бы в ЛЮБОМ случае закрыть файл после чтения, применяется вместо try
         with open('mdisettings.dat', 'wb') as f:
