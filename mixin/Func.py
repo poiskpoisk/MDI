@@ -197,7 +197,7 @@ def recRaznoska( table, result, cycle, len_table,row, label ):
 def readSetupFile():
     try:
         d = open('mdisettings.dat', 'rb')
-        d.close()
+        d.close() #
     except:
         wx.MessageBox(u'Не удалось считать таблицу с  програмными настройками, создали новую',
                       caption=u"Сообщение о проблемах", style=wx.OK | wx.ICON_ERROR)
